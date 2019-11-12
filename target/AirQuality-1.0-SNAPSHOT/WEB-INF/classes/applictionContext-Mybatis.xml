@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--<context:component-scan base-package="cn.book.dao"></context:component-scan>
+    --><!--开启配置文件的扫描-->
+    <context:property-placeholder location="classpath:database.properties"></context:property-placeholder>
+    <!--开启包扫描-->
+    <context:component-scan base-package="cn.air.service"></context:component-scan>
+    <!--数据库连接池-->
+    <!--c3p0是 一个库 是一个开源的jdbc连接池 他扩展了传
+    统的jdbc数据库连接池 并且支持jdbc3规范和jdbc2的标准扩展-->
+    <!--为什么使用C3p0?-->
+    <!--首先C3P0是一个JDBC数据库连接池 -->
+    <!--为什么使用连接池呢?-->
+    <!--因为数据库连接是一种有限的，关键的,昂贵的资源 。在传统的模式下 每次连接都需要验证用户 消耗的大量的时间和资源  -->
+    <!--而数据库连接池 就是在系统初始化的时候 将数据库连接作为对象储存在内存当中 每次访问的时候  只需要在数据库连接池中取出一个空闲的连接对象  -->
+    <!--数据库连接池管理数据连接的建立断开 同时监听数据库连接数量和使用情况 提高数据库连接的数量 减少资源的占用 提高程序性能指标 -->
+    <bean id="dataSoure" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${driver}"></property>
+        <property name="jdbcUrl" value="${url}"></property>
+        <property name="user" value="${user}"></property>
+        <property name="password" value="${password}"></property>
+    </bean>
+    <!--配置SQlSessionFactionBean-->
+    <!--什么是SQlSessionFactionBean-->
+    <!--sqlsessionFactionBean 封装了 SqlSessionFactoryBuidel  创建 SqlsessionFactoy的过程 -->
+    <bean id="sqlSessionFaction" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--   &lt;!&ndash;引入数据源主键 连接数据库连接池&ndash;&gt;-->
+        <property name="dataSource" ref="dataSoure"></property>
+        <!--&lt;!&ndash;开启配置类的别名&ndash;&gt;-->
+
+        <property name="typeAliasesPackage" value="cn.air.pojo"></property>
+        <!--<setting name="mapUnderscoreToCamelCase" value="true" />-->
+        <property name="configLocation" value="classpath:mybatis-conifg.xml"></property>
+
+        <!--&lt;!&ndash;配置Sql映射文件&ndash;&gt;-->
+        <property name="mapperLocations">
+            <value>classpath:mapper/*Mapper.xml</value>
+        </property>
+    </bean>
+
+    <bean class="cn.air.util.InitDataListener"/>
+    <!--扫描业务层-->
+    <!--针对mapper自动代理-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--开启扫描-->
+        <property name="basePackage" value="cn.air.mapper"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFaction"></property>
+    </bean>
+
+    <!--定义事务管理器-->
+    <!--事务的概念-->
+    <!--事务必须服从ACID原则ACID指的是原子性（atomicity）、一致性（consistency）、隔离性（isolation）和持久性（durability）。
+        通俗理解，事务其实就是一系列指令的集合。
+-->
+    <!--什么是事务?-->
+    <!--原子性:操作数据的时候要么全部执行 要么全部不执行 只要有一个指令执行失败 那么使用的指令都会不执行 并且会回滚 回到执行之前的状态-->
+    <!--一致性:事务执行的使数据从另一个状态转换成另一个状态的时候 但对于数据的完整性保持稳定-->
+    <!--隔离性：在事务执行的过程中 所有的数据改变都发生在事务当中 对外界不影响 产生隔离 只有事务正常提交才会显示事务对数据的改变-->
+    <!--持久性：当事务执行后 对数据的改变是永久性-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSoure"></property>
+    </bean>
+    <!--下面的代码要抄的   &lt;!&ndash; 是注释   &ndash;&gt;-->
+    <!--  &lt;!&ndash;将事务切入到我们的service方法中&ndash;&gt;
+   <tx:advice id="advice" transaction-manager="transactionManager">
+       <tx:attributes>
+           &lt;!&ndash;SUPPORTS有事务就使用事务 没有 事务就使用非事务&ndash;&gt;
+           &lt;!&ndash;name 是Servie方法名  可以 *find *UserList&ndash;&gt;
+           <tx:method name="find" propagation="SUPPORTS" read-only="true"/>
+           &lt;!&ndash;如果有事务就使用事务 如果 没有 就创建一个新的事务&ndash;&gt;
+           <tx:method name="update*" propagation="REQUIRED"/>
+       </tx:attributes>
+
+   </tx:advice>
+   <aop:config>
+       <aop:pointcut id="mycut" expression="execution(* com.jbit.service.*.*(..))"/>
+       <aop:advisor advice-ref="advice" pointcut-ref="mycut"></aop:advisor>
+   </aop:config>-->
+    <!--因为添加的表单中 有文件上传 所以需要 下面的格式-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600"/>
+        <property name="maxInMemorySize" value="4096"/>
+    </bean>
+
+    <!--AOP思想-->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+</beans>

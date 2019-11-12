@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.air.mapper.AirQualityIndexMapper">
+    <insert id="addAir">
+        insert into AIR_QUALITY_INDEX(ID, DISTRICT_ID, MONITOR_TIME, PM10,PM, MONITORING_STATION, LAST_MODIFY_TIME)
+        values (AIR_SEQ.nextval,
+        #{districtId},
+        #{monitorTime},
+        #{pm10},
+        #{pm},
+        #{monitoringStation},
+        #{lastModifyTime})
+    </insert>
+    <update id="updateAir">
+        update air_quality_index set
+        <trim suffix="where id=#{id}">
+            <if test="districtId!=null and districtId!=0">
+                DISTRICT_ID=#{districtId},
+            </if>
+            <if test="monitorTime!=null">
+                monitor_time=#{monitorTime},
+            </if>
+            <if test="pm10!=null">
+                PM10 =#{pm10},
+            </if>
+            <if test="pm!=null">
+                PM=#{pm},
+            </if>
+            <if test="monitoringStation!=null">
+                MONITORING_STATION=#{monitoringStation},
+            </if>
+            <if test="lastModifyTime!=null">
+                LAST_MODIFY_TIME=#{lastModifyTime}
+            </if>
+        </trim>
+    </update>
+    <delete id="deleteAir">
+        delete from AIR_QUALITY_INDEX where id=#{id}
+    </delete>
+
+    <select id="getAirList" resultType="cn.air.pojo.AirQualityIndex">
+        SELECT a.* ,(select name from DISTRICT d where a.DISTRICT_ID=d.ID) as name FROM
+        (
+        SELECT A.*, ROWNUM RN
+        FROM (SELECT * FROM air_quality_index order by MONITOR_TIME desc) A
+        WHERE ROWNUM &lt;= #{pageSize}
+        <if test="id!=0 and id!=null">
+            and A.district_id=#{id}
+        </if>
+
+        ) a
+        WHERE RN &gt; #{currentPageNo}
+
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select COUNT(1) from AIR_QUALITY_INDEX
+        <trim prefix="where ">
+            <if test="id!=null and id!=0">
+                DISTRICT_ID=#{id}
+            </if>
+        </trim>
+
+    </select>
+    <select id="air" resultType="cn.air.pojo.AirQualityIndex">
+        select *from AIR_QUALITY_INDEX where ID=#{id}
+    </select>
+
+</mapper>

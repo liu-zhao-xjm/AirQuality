@@ -1,0 +1,8 @@
+div {
+    /*边框*/
+    border: black 1px solid;
+    /*内边距*/
+    padding: 20px;
+    /*宽度*/
+    width: 500px;
+}

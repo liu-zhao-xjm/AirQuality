@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 可以忽略数据库的大小写 例如 lastName 和 Last_name 忽略 _ -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+	</settings>
+</configuration>
