@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        body{
+            background-color:#E6E6E6 ;
+            margin: auto;
+            text-align: center;
+            font-weight:bold;
+            font-size: 25px;
+        }
+        div{
+            margin:20px auto;
+            width: 10cm;
+            height: 10cm;
+            padding: 9px;
+            background-color: white;
+
+        }
+        table{
+            width:9.8cm;
+            height:9.8cm;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+<div>
+<table border="3" style="border-collapse: collapse;cellspacing:0; cellpadding:0" th:each="order, o : ${createOrderList}">
+    <tr><td><span style="vertical-align: middle" ><img src="1.png"></span><span style="vertical-align: middle" ><span th:text="${o.count}"></span>/<span th:text="${o.size}"></span></span></td></tr>
+    <tr><td><span style="vertical-align: middle" th:text="${order.cNum}"></span>    <span style="font-size: 15px;vertical-align: middle" th:text="${order.cEmsKind}"></span></td></tr>
+    <tr><td style="line-height: 120px;vertical-align: middle"><span th:text="${order.cDes}"></span><span style="font-size: 60px;vertical-align: middle" th:text="${order.cRUnit}"></span></td></tr>
+    <tr><td><span>MADE IN CHINA</span></td></tr>
+</table>
+</div>
+</body>
+</html>
